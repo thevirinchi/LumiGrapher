@@ -1,7 +1,11 @@
 package com.z00k.z3t4.lumigrapher;
 
+import android.animation.ArgbEvaluator;
+import android.os.Build;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -16,7 +20,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+//import com.z00k.z3t4.lumigrapher.utils.Utils;
 
 public class onBoard extends AppCompatActivity {
 
@@ -34,31 +43,111 @@ public class onBoard extends AppCompatActivity {
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
+    ImageButton mNextButton;
+    Button mSkipButton, mFinishButton;
+
+    ImageView zero, one, two;
+    ImageView[] indicators;
+
+    int lastLeftVal = 0;
+
+    CoordinatorLayout mCoordinator;
+    static final String TAG = "onBoard";
+
+    int page = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_on_board);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+
+        mNextButton = (ImageButton) findViewById(R.id.introNext);
+        mSkipButton = (Button) findViewById(R.id.introSkip);
+        mFinishButton = (Button) findViewById(R.id.introFinish);
+
+        zero = (ImageView) findViewById(R.id.intro0);
+        one = (ImageView) findViewById(R.id.intro1);
+        two = (ImageView) findViewById(R.id.intro2);
+
+        mCoordinator = (CoordinatorLayout) findViewById(R.id.main_content);
+
+        indicators = new ImageView[]{zero, one, two};
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        mViewPager.setCurrentItem(page);
+        updateIndicators(page);
+
+        final int color1 = ContextCompat.getColor(this, R.color.cyan);
+        final int color2 = ContextCompat.getColor(this, R.color.orange);
+        final int color3 = ContextCompat.getColor(this, R.color.green);
+
+        final int[] colorList = new int[]{color1, color2, color3};
+
+        final ArgbEvaluator evaluator = new ArgbEvaluator();
+
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                int colorUpdate = (Integer) evaluator.evaluate(positionOffset, colorList[position], colorList[position == 2 ? position:position+1]);
+                mViewPager.setBackgroundColor(colorUpdate);
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                page = position;
+                updateIndicators(page);
+                switch(position){
+                    case 0:
+                        mViewPager.setBackgroundColor(color1);
+                        break;
+                    case 1:
+                        mViewPager.setBackgroundColor(color2);
+                        break;
+                    case 2:
+                        mViewPager.setBackgroundColor(color3);
+                        break;
+                }
+
+                mNextButton.setVisibility(position == 2 ? View.GONE : View.VISIBLE);
+                mFinishButton.setVisibility(position == 2? View.VISIBLE : View.GONE);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
             }
         });
 
+        mNextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                page += 1;
+                mViewPager.setCurrentItem(page, true);
+            }
+        });
+
+        mSkipButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
+        mFinishButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+                //Utils.saveSharedSetting(onBoard.this, MainActivity.PREF_USER_FIRST_TIME, "false");
+            }
+        });
     }
 
 
