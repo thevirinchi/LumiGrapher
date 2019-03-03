@@ -1,4 +1,12 @@
 <resources>
     <string name="app_name">Lumi Grapher</string>
     <string name="action_settings">Settings</string>
+    <string name="title_activity_on_board">Chante\'Le</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+
+    <!-- OnBoard Strings -->
+    <string name="skip">Skip</string>
+    <string name="finish">Finish</string>
+    <string name="next">Next</string>
+    <string name="tabIndicator">Tab Indicator</string>
 </resources>
