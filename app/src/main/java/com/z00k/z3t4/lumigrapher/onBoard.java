@@ -1,6 +1,8 @@
 package com.z00k.z3t4.lumigrapher;
 
 import android.animation.ArgbEvaluator;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -145,11 +147,16 @@ public class onBoard extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 finish();
-                //Utils.saveSharedSetting(onBoard.this, MainActivity.PREF_USER_FIRST_TIME, "false");
+                Utils.saveSharedSetting(onBoard.this, MainActivity.PREF_USER_FIRST_TIME, "false");
             }
         });
     }
 
+    void updateIndicators(int position){
+        for(int i = 0; i < indicators.length; i++){
+            indicators[i].setBackgroundResource(i == position ? R.drawable.ic_selected_dot : R.drawable.ic_unselected_dot);
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -182,6 +189,9 @@ public class onBoard extends AppCompatActivity {
          * fragment.
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
+
+        ImageView img;
+        int[] bgs = new int[]{R.drawable.ic_camera_alt_black_24dp, R.drawable.ic_email_black_24dp, R.drawable.ic_flight_black_24dp};
 
         public PlaceholderFragment() {
         }
@@ -229,6 +239,19 @@ public class onBoard extends AppCompatActivity {
         public int getCount() {
             // Show 3 total pages.
             return 3;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position){
+            switch(position){
+                case 1:
+                    return "SECTION 1";
+                case 2:
+                    return "SECTION 2";
+                case 3:
+                    return "SECTION 3";
+            }
+            return null;
         }
     }
 }
